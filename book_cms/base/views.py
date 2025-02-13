@@ -6,11 +6,17 @@ from .models import Book
 
 
 def book_list(request):
+    query = request.GET.get("q", "")
+    if query:
+        books = Book.objects.filter(book_name__icontains=query) | Book.objects.filter(author_name__icontains=query)
+    else:
+        books = Book.objects.all()
     context = {
         "book_list_class": "rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white",
         "add_book_class": "rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white",
         "edit_or_add": "Add Book",
-        "books": Book.objects.all(),
+        "books": books,
+        "query": query
     }
     return render(request, "base/book_list.html", context)
 
